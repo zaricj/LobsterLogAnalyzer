@@ -1,14 +1,11 @@
 [project]
-name = "lobsterlogreporter"
+name = "src"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
+    "pandas>=2.3.3",
     "pyside6-essentials>=6.10.1",
-]
-
-[tool.uv.workspace]
-members = [
-    "src",
+    "xlsxwriter>=3.2.9",
 ]

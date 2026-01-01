@@ -18,15 +18,15 @@ from PySide6.QtCore import (
     QThreadPool
 )
 
-from gui.ui_files.main_ui.ui_LobsterGeneralLogViewer import Ui_MainWindow
-from gui.models.treeViewModel import DirectoryViewer
+from gui.ui.main.LobsterGeneralLogViewer_ui import Ui_MainWindow
+from utils.UIMixinUtility import Mixin
 
 # ----------------------------
 # Constants
-# ----------------------------
-CURRENT_DIR = Path(__file__).parent
-GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
-GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
+# ----------------------------I
+ROOT_DIR = Path(__file__).parent
+GUI_PATTERN_DIRECTORY: Path = ROOT_DIR / "patterns"
+GUI_PATTERN_FILE_PATH: Path = GUI_PATTERN_DIRECTORY / "patterns.json"
 
 # Application versioning and metadata
 APP_VERSION: str = "v0.0.1"
@@ -39,7 +39,6 @@ AUTHOR: str = "Jovan"
 def save_window_state(window: QMainWindow, settings: QSettings):
     settings.setValue("geometry", window.saveGeometry())
     settings.setValue("windowState", window.saveState())
-
 
 def restore_window_state(window: QMainWindow, settings: QSettings):
     geometry = settings.value("geometry")
@@ -67,13 +66,13 @@ def restore_window_state(window: QMainWindow, settings: QSettings):
 # ----------------------------
 # Entrypoint
 # ----------------------------
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Mixin):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.dir_viewer = DirectoryViewer(main_window=self)
+        self.initialize_ui_all() # From Mixin class
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
