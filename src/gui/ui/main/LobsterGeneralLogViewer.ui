@@ -66,6 +66,9 @@
                <height>0</height>
               </size>
              </property>
+             <property name="lineWrapMode">
+              <enum>QTextEdit::LineWrapMode::NoWrap</enum>
+             </property>
             </widget>
            </item>
            <item>

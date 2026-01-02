@@ -22,7 +22,6 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QStatusBar, QTableView, QTextEdit, QTreeView,
     QVBoxLayout, QWidget)
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -51,6 +50,7 @@ class Ui_MainWindow(object):
         self.text_edit_program_output = QTextEdit(self.verticalGroupBox_information)
         self.text_edit_program_output.setObjectName(u"text_edit_program_output")
         self.text_edit_program_output.setMinimumSize(QSize(0, 0))
+        self.text_edit_program_output.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
 
         self.verticalLeftLogView.addWidget(self.text_edit_program_output)
 

@@ -1,6 +1,7 @@
 """Service for managing UI state and widget states."""
 from ast import List
 from typing import TYPE_CHECKING
+from PySide6.QtWidgets import QWidget
 
 if TYPE_CHECKING:
     from app import MainWindow
@@ -26,24 +27,38 @@ class UIStateManager:
         self.ui.radiobutton_excel.setEnabled(False)
         self.ui.progressbar.setVisible(False)
     
-    def enable_widgets(self, widgets: List) -> None:
+    def enable_widgets(self, widgets: list[QWidget]) -> None:
         """Enables the given PySide6 widgets as a list
 
         Args:
-            widgets (List): List of widgets to enable with .setEnabled(True)
+            widgets (list[QWidget]): List of widgets to enable with .setEnabled(True)
         """
-        pass
+        for widget in widgets:
+            widget.setEnabled(True)
     
-    def disable_widgets(self, widgets: List) -> None:
+    def disable_widgets(self, widgets: list[QWidget]) -> None:
         """Disable the given PySide6 widgets as a list
 
         Args:
-            widgets (List): List of widgets to disable with .setEnabled(False)
+            widgets (list[QWidget]): List of widgets to disable with .setEnabled(False)
         """
-        pass
+        for widget in widgets:
+            widget.setEnabled(False)
     
-    def hide_widgets(self, widgets: List) -> None:
-        pass
+    def hide_widgets(self, widgets: list[QWidget]) -> None:
+        """Hides the given PySide6 widgets as a list
+
+        Args:
+            widgets (list[QWidget]): List of widgets to hide with .setVisible(False)
+        """
+        for widget in widgets:
+            widget.setVisible(False)
     
-    def show_widgets(self, widgets: List) -> None:
-        pass
+    def show_widgets(self, widgets: list[QWidget]) -> None:
+        """Unhides the given PySide6 widgets as a list
+
+        Args:
+            widgets (list[QWidget]): List of widgets to unhide with .setVisible(True)
+        """
+        for widget in widgets:
+            widget.setVisible(True)

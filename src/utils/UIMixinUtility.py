@@ -6,9 +6,14 @@ from PySide6.QtCore import Slot, QSettings
 from gui.ui.main.LobsterGeneralLogViewer_ui import Ui_MainWindow
 from gui.models.treeViewModel import DirectoryViewer
 from gui.models.tableViewModel import ResultsTableWidget
-from utils.UIStateManager import UIStateManager
-from utils.helperUtility import HelperMethods
 
+# Path configuration (for pattern handler mainly)
+FILE_DIR = Path(__file__).resolve()
+ROOT_DIR = FILE_DIR.parents[1] # src Folder
+GUI_PATTERN_DIRECTORY: Path = ROOT_DIR / "patterns"
+GUI_PATTERN_FILE_PATH: Path = GUI_PATTERN_DIRECTORY / "patterns.json"
+GUI_PATTERN_DIRECTORY,
+GUI_PATTERN_FILE_PATH
 
 class Mixin:
     """
@@ -46,9 +51,16 @@ class Mixin:
         self.line_edit_handler.connect_signals()
         
     def initialize_utilities(self):
+        from utils.UIStateManager import UIStateManager
+        from utils.helperUtility import HelperMethods
+        from utils.patternHandler import PatternHandler
+        
         self.helper = HelperMethods(self)
         self.ui_state_manager = UIStateManager(self)
-    
+        self.pattern_handler = PatternHandler(self,
+            GUI_PATTERN_DIRECTORY,
+            GUI_PATTERN_FILE_PATH)
+
     def initialize_views(self):
         self.dir_viewer = DirectoryViewer(self) # Init the tree view model object
         self.table_results = ResultsTableWidget(self)

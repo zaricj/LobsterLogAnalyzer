@@ -1,17 +1,20 @@
-from ast import List
+from ast import Dict, List
 import pandas as pd
 from PySide6.QtCore import Slot
-from PySide6.QtWidgets import QFileDialog, QMessageBox, QListWidget
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QListWidget, QTextEdit
 from typing import TYPE_CHECKING
+
 
 if TYPE_CHECKING:
     from app import MainWindow
+    
+
     
 class ButtonEventHandler:
     def __init__(self, main_window: 'MainWindow'):
         self.main_window = main_window
         self.ui = main_window.ui
-        
+
     def connect_signals(self):
         """Connect all button events to their handlers."""
         # Browse folder button
@@ -31,13 +34,32 @@ class ButtonEventHandler:
         # Export button - TODO: implement export logic
         # self.ui.button_export.clicked.connect(self.on_export_data)
         
-        # Change directory button - TODO: implement directory change
-        # self.ui.button_change_directory.clicked.connect(self.on_change_directory)
+        # Pattern config info button
+        self.ui.button_pattern_configuration_info.clicked.connect(self.on_pattern_config_info)
         
         # Refresh configuration button - TODO: implement config refresh
         # self.ui.button_refresh_configuration.clicked.connect(self.on_refresh_configuration)
         
     # ===== UI Events =====
+    
+    @Slot()
+    def on_pattern_config_info(self) -> None:
+        """Event of the button for the configuration pattern information
+        """
+        program_output: QTextEdit = self.ui.text_edit_program_output
+        combobox_text: str = self.ui.combobox_configuration.currentText()
+        current_combobox_data: dict | str = self.main_window.pattern_handler.get(combobox_text)
+        
+        if len(current_combobox_data) != 0:
+            # Print to program output window
+            if isinstance(current_combobox_data, dict):
+                program_output.setText("Key\tValue")
+                for key, value in current_combobox_data.items():
+                    program_output.append(f"{key}   ----->   {value}")
+            elif isinstance(current_combobox_data, str):
+                program_output.setText(f"Config value: {current_combobox_data}")
+            else:
+                program_output.setText("No data available or unsupported type.")
 
     @Slot()
     def on_load_csv_file_for_table(self):

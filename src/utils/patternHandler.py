@@ -1,3 +1,4 @@
+from ast import Dict
 from PySide6.QtWidgets import QMessageBox, QMainWindow
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -16,7 +17,7 @@ class PatternHandler:
         Path.mkdir(self.config_directory, exist_ok=True)
         self.data = self._load_config()
 
-    def _load_config(self) -> dict:
+    def _load_config(self) -> dict | str:
         """Loads configuration from the JSON file. If the file is missing or
         invalid, it resets the configuration and returns an empty dictionary.
         """
@@ -86,15 +87,17 @@ class PatternHandler:
                 parent_data = parent_data[key]
         self.save_config()
 
-    def get(self, key_path: str, default: any = None) -> dict:
-        """Gets a configuration value, handling nested keys (e.g., 'section.subsection.key')."""
+    def get(self, key_path: str) -> dict | str:
+        """Gets a configuration value, handling nested keys (e.g., 'section.subsection.key').
+            
+            If it's a key that contains sub keys, it will return a dictionary, if the key does not have sub keys it will return the key's value as a string"""
         keys = key_path.split('.')
-        current_data = self._load_config()
+        current_data: dict | str = self._load_config()
         for key in keys:
             if isinstance(current_data, dict) and key in current_data:
                 current_data = current_data[key]
             else:
-                return default
+                return {}
         return current_data
 
     def delete(self, key_path: str):
