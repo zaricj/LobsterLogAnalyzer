@@ -72,7 +72,9 @@ class MainWindow(QMainWindow, Mixin):
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.thread_pool = QThreadPool() # Thread pool
         self.initialize_ui_all() # From Mixin class
+        self.ui_state_manager.initial_ui_state_on_start()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

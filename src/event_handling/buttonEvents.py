@@ -1,3 +1,4 @@
+from ast import List
 import pandas as pd
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QFileDialog, QMessageBox, QListWidget
@@ -24,7 +25,7 @@ class ButtonEventHandler:
         # Clear table button
         self.ui.button_clear_table.clicked.connect(self.on_clear_table)
         
-        # Parse files button - TODO: implement parsing logic
+        # Parse files button - TODO: implement parsing logic --- STARTS THREAD
         self.ui.button_parse_files.clicked.connect(self.on_parse_files)
         
         # Export button - TODO: implement export logic
@@ -42,28 +43,31 @@ class ButtonEventHandler:
     def on_load_csv_file_for_table(self):
         """Load CSV file for table display."""
         try:
+            
             file_path = self.main_window.helper.browse_file_helper_non_input(
                 dialog_message="Select CSV file to display",
-                file_extension_filter="CSV File (*.csv)"
-            )
-
+                file_extension_filter="CSV File (*.csv)")
+            
             if file_path:
                 df = pd.read_csv(file_path)
                 self.populate_results_table(df)
-                self.main_window.ui_state_manager.set_table_widgets_disabled(False)
+                widgets: List = [self.ui.button_clear_table, self.ui.button_export, self.ui.radiobutton_csv, self.ui.radiobutton_excel]
+                self.main_window.ui_state_manager.enable_widgets(widgets)
+                
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception loading CSV file", message)
 
     # Populate the Table Widget
-    def populate_results_table(self, results: pd.DataFrame):
+    def populate_results_table(self, data: pd.DataFrame):
         """Display the DataFrame efficiently in a QTableView."""
-        from gui.models import tableViewModel
+        from gui.models.tableViewModel import ResultsTableWidget
 
-        if results.empty:
+        if data.empty:
             self.ui.table_view_result.setModel(None)
             return
-        model = tableViewModel(results)
+        
+        model = ResultsTableWidget(data)
         self.ui.table_view_result.setModel(model)
         self.ui.table_view_result.resizeColumnsToContents()
 
@@ -72,7 +76,8 @@ class ButtonEventHandler:
         """Clear table data."""
         self.ui.table_view_result.setModel(None)
         self.ui.input_filter_table.clear()
-        self.main_window.ui_state_manager.set_table_widgets_disabled(True)
+        widgets: List = [self.ui.button_clear_table, self.ui.button_export, self.ui.radiobutton_csv, self.ui.radiobutton_excel]
+        self.main_window.ui_state_manager.disable_widgets(widgets)
         
     @Slot()
     def on_parse_files(self):

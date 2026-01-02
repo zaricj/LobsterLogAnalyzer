@@ -138,11 +138,27 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="button_refresh_configuration">
+                  <property name="toolTip">
+                   <string>Refresh the üatterns if new files were added to the patterns folder.</string>
+                  </property>
                   <property name="text">
                    <string>Refresh</string>
                   </property>
                   <property name="icon">
                    <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_pattern_configuration_info">
+                  <property name="toolTip">
+                   <string>Show relevant info about the selected pattern configuration.</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="QIcon::ThemeIcon::HelpAbout"/>
                   </property>
                  </widget>
                 </item>
@@ -160,12 +176,15 @@
                 <item>
                  <widget class="QLineEdit" name="input_browse_folder">
                   <property name="placeholderText">
-                   <string>Select a folder containing log files to search...</string>
+                   <string>Select a folder containing text based files to search...</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="button_browse_folder">
+                  <property name="toolTip">
+                   <string>Browse folder directory.</string>
+                  </property>
                   <property name="text">
                    <string>Browse</string>
                   </property>
@@ -203,7 +222,7 @@
                    </size>
                   </property>
                   <property name="placeholderText">
-                   <string>(Optional) Enter patterns to search only specific files (wildcard * accepted and comma-separated)</string>
+                   <string>(Optional) Enter patterns to search only specific files (comma-separated)</string>
                   </property>
                   <property name="clearButtonEnabled">
                    <bool>true</bool>
@@ -214,12 +233,22 @@
               </item>
               <item>
                <widget class="QPushButton" name="button_parse_files">
+                <property name="toolTip">
+                 <string>Parse and search the found files in the folder and display it's results into the table below.</string>
+                </property>
                 <property name="text">
                  <string>Parse Files</string>
                 </property>
                </widget>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="progressbar">
+             <property name="value">
+              <number>24</number>
+             </property>
             </widget>
            </item>
           </layout>
@@ -298,6 +327,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QPushButton" name="button_import_csv">
+              <property name="toolTip">
+               <string>Import a CSV file into the table.</string>
+              </property>
               <property name="text">
                <string>Import CSV</string>
               </property>
@@ -350,6 +382,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="button_export">
+              <property name="toolTip">
+               <string>Export the table data.</string>
+              </property>
               <property name="text">
                <string>Export</string>
               </property>
@@ -366,6 +401,9 @@
              <widget class="QPushButton" name="button_clear_table">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>Clear table results.</string>
               </property>
               <property name="text">
                <string>Clear Table</string>
@@ -388,7 +426,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="input_filter_table"/>
+           <widget class="QLineEdit" name="input_filter_table">
+            <property name="toolTip">
+             <string>Filter table data.</string>
+            </property>
+            <property name="placeholderText">
+             <string>Filter table data by text...</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

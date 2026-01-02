@@ -17,11 +17,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QLineEdit, QMainWindow, QMenuBar, QPushButton,
-    QRadioButton, QSizePolicy, QSplitter, QStatusBar,
-    QTableView, QTextEdit, QTreeView, QVBoxLayout,
-    QWidget)
-import LogSearcher_resource_rc
+    QLineEdit, QMainWindow, QMenuBar, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QSplitter,
+    QStatusBar, QTableView, QTextEdit, QTreeView,
+    QVBoxLayout, QWidget)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -100,6 +100,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.button_refresh_configuration)
 
+        self.button_pattern_configuration_info = QPushButton(self.widget_configuration)
+        self.button_pattern_configuration_info.setObjectName(u"button_pattern_configuration_info")
+        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
+        self.button_pattern_configuration_info.setIcon(icon1)
+
+        self.horizontalLayout_2.addWidget(self.button_pattern_configuration_info)
+
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
 
@@ -154,6 +161,12 @@ class Ui_MainWindow(object):
 
         self.verticalLeftLogView.addWidget(self.widget_configuration)
 
+        self.progressbar = QProgressBar(self.verticalGroupBox_information)
+        self.progressbar.setObjectName(u"progressbar")
+        self.progressbar.setValue(24)
+
+        self.verticalLeftLogView.addWidget(self.progressbar)
+
         self.splitterTop.addWidget(self.verticalGroupBox_information)
         self.verticalGroupBox_directory_view = QGroupBox(self.splitterTop)
         self.verticalGroupBox_directory_view.setObjectName(u"verticalGroupBox_directory_view")
@@ -196,8 +209,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.button_import_csv = QPushButton(self.groupBox_parsed_data_result)
         self.button_import_csv.setObjectName(u"button_import_csv")
-        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertLink))
-        self.button_import_csv.setIcon(icon1)
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertLink))
+        self.button_import_csv.setIcon(icon2)
 
         self.horizontalLayout_4.addWidget(self.button_import_csv)
 
@@ -287,20 +300,46 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.verticalGroupBox_information.setTitle(QCoreApplication.translate("MainWindow", u"Information", None))
         self.label_pattern_configuration.setText(QCoreApplication.translate("MainWindow", u"Pattern Configuration:", None))
+#if QT_CONFIG(tooltip)
+        self.button_refresh_configuration.setToolTip(QCoreApplication.translate("MainWindow", u"Refresh the \u00fcatterns if new files were added to the patterns folder.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_refresh_configuration.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
+#if QT_CONFIG(tooltip)
+        self.button_pattern_configuration_info.setToolTip(QCoreApplication.translate("MainWindow", u"Show relevant info about the selected pattern configuration.", None))
+#endif // QT_CONFIG(tooltip)
+        self.button_pattern_configuration_info.setText("")
         self.label_files_directory.setText(QCoreApplication.translate("MainWindow", u"Files Directory:", None))
-        self.input_browse_folder.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select a folder containing log files to search...", None))
+        self.input_browse_folder.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select a folder containing text based files to search...", None))
+#if QT_CONFIG(tooltip)
+        self.button_browse_folder.setToolTip(QCoreApplication.translate("MainWindow", u"Browse folder directory.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_browse_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.label_file_pattern.setText(QCoreApplication.translate("MainWindow", u"File Pattern:", None))
-        self.input_file_pattern.setPlaceholderText(QCoreApplication.translate("MainWindow", u"(Optional) Enter patterns to search only specific files (wildcard * accepted and comma-separated)", None))
+        self.input_file_pattern.setPlaceholderText(QCoreApplication.translate("MainWindow", u"(Optional) Enter patterns to search only specific files (comma-separated)", None))
+#if QT_CONFIG(tooltip)
+        self.button_parse_files.setToolTip(QCoreApplication.translate("MainWindow", u"Parse and search the found files in the folder and display it's results into the table below.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_parse_files.setText(QCoreApplication.translate("MainWindow", u"Parse Files", None))
         self.verticalGroupBox_directory_view.setTitle(QCoreApplication.translate("MainWindow", u"Directory View", None))
         self.groupBox_parsed_data_result.setTitle(QCoreApplication.translate("MainWindow", u"Parsed Data Result", None))
+#if QT_CONFIG(tooltip)
+        self.button_import_csv.setToolTip(QCoreApplication.translate("MainWindow", u"Import a CSV file into the table.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_import_csv.setText(QCoreApplication.translate("MainWindow", u"Import CSV", None))
         self.label_export_as.setText(QCoreApplication.translate("MainWindow", u"Export as:", None))
         self.radiobutton_csv.setText(QCoreApplication.translate("MainWindow", u"CSV", None))
         self.radiobutton_excel.setText(QCoreApplication.translate("MainWindow", u"Excel", None))
+#if QT_CONFIG(tooltip)
+        self.button_export.setToolTip(QCoreApplication.translate("MainWindow", u"Export the table data.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+#if QT_CONFIG(tooltip)
+        self.button_clear_table.setToolTip(QCoreApplication.translate("MainWindow", u"Clear table results.", None))
+#endif // QT_CONFIG(tooltip)
         self.button_clear_table.setText(QCoreApplication.translate("MainWindow", u"Clear Table", None))
+#if QT_CONFIG(tooltip)
+        self.input_filter_table.setToolTip(QCoreApplication.translate("MainWindow", u"Filter table data.", None))
+#endif // QT_CONFIG(tooltip)
+        self.input_filter_table.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Filter table data by text...", None))
     # retranslateUi
 

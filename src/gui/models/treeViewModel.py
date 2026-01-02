@@ -12,21 +12,22 @@ class DirectoryViewer():
     def __init__(self, main_window: "MainWindow", start_path=None):
         self.main_window = main_window
         self.ui = main_window.ui
+        self.start_path = start_path
         
         # 1. Setup the Model
         self.model = QFileSystemModel()
         
         # Set the root path for the model
-        if start_path is None:
+        if self.start_path is None:
             # Default to the user's home directory if no path is provided
             # You can specify a starting path, e.g., 'C:/' on Windows or '/home/user/' on Linux
             # QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
-            start_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
+            self.start_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
         else:
-            start_path = QDir.currentPath()
+            self.start_path = QDir.currentPath()
 
         # Set the root path on the model
-        self.model.setRootPath(start_path)
+        self.model.setRootPath(self.start_path)
 
         # 2. Setup the View
         self.ui.treeview_directory_view
@@ -35,7 +36,7 @@ class DirectoryViewer():
         # Set the view's root index to display the contents of the starting path
         # If you want to show the full drive structure, setRootPath is enough, 
         # but to limit the view to a specific folder's contents, set setRootIndex.
-        root_index = self.model.index(start_path)
+        root_index = self.model.index(self.start_path)
         self.ui.treeview_directory_view.setRootIndex(root_index)
 
         # Optional: Configure the view appearance
@@ -58,14 +59,12 @@ class DirectoryViewer():
         # Get the absolute file path from the model for the given index
         file_path: str = self.model.filePath(index)
         # Init the line edit where to set the path
-        line_edit: QLineEdit = self.ui.input_current_directory
+        line_edit: QLineEdit = self.ui.input_browse_folder
         check: str = self.check_if_file_or_folder(file_path)
     
-        if check == "file": # Only print if file for now
+        if check == "folder": # Only print if folder for now
             # Set file path in the line edit underneath it
             self.set_item_path_in_line_edit(line_edit, file_path)
-        
-        print(f"Selected Path: {file_path}")
         
     def set_item_path_in_line_edit(self, line_edit: QLineEdit, text_to_display: str = None):
         """
@@ -85,3 +84,11 @@ class DirectoryViewer():
             return "folder"
         else:
             return "not found"
+    
+    def set_root_path(self, path: str):
+        """
+        Sets the root path for the directory viewer to display the contents of the given path.
+        """
+        self.model.setRootPath(path)
+        root_index = self.model.index(path)
+        self.ui.treeview_directory_view.setRootIndex(root_index)

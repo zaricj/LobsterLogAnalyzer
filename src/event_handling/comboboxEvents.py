@@ -39,7 +39,7 @@ class ComboBoxEventHandler:
     # ===== UI Events =====
     
     def populate_patterns_combobox(self, combobox: QComboBox):
-        patterns = self.handler.get_all_keys("exception_patterns")
+        patterns = self.handler.get_all_keys()
         combobox.addItems(patterns)
         self.ui.text_edit_program_output.setText("Loaded pattern keys!")
         

@@ -1,9 +1,13 @@
 from PySide6.QtWidgets import QMessageBox, QMainWindow
 from pathlib import Path
+from typing import TYPE_CHECKING
 import json
 
+if TYPE_CHECKING:
+    from app import MainWindow
+
 class PatternHandler:
-    def __init__(self, main_window: QMainWindow = None, config_directory: Path = None, config_file_name: Path = None):
+    def __init__(self, main_window: 'MainWindow' = None, config_directory: Path = None, config_file_name: Path = None):
         """Initializes the ConfigHandler with a specific JSON configuration file."""
         self.main_window = main_window
         self.config_directory: Path = config_directory

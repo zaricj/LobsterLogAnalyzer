@@ -23,22 +23,27 @@ class Mixin:
     set_max_threads: int
     
     def initialize_ui_all(self):
-        self.initialize_views()
+        """Initialize all utilities, handlers, ui signals etc...
+        """
+        self.initialize_views()        # Initialize all the different views like Table and Tree
         self.initialize_utilities()    # Initialize utilities first
         self.initialize_handlers()     # Then handlers (which depend on utilities)
-        self.initialize_ui_signals()   # Finally connect signals
+        self.initialize_handler_signals()   # Finally connect signals
         
     def initialize_handlers(self):
         """Initialize all specialized event handlers."""
         from event_handling.buttonEvents import ButtonEventHandler
         from event_handling.comboboxEvents import ComboBoxEventHandler
+        from event_handling.lineEditEvents import LineEditHandler
         
         self.button_handler = ButtonEventHandler(self)
         self.combobox_handler = ComboBoxEventHandler(self)
+        self.line_edit_handler = LineEditHandler(self)
         
-    def initialize_ui_signals(self):
+    def initialize_handler_signals(self):
         self.button_handler.connect_signals()
         self.combobox_handler.connect_signals()
+        self.line_edit_handler.connect_signals()
         
     def initialize_utilities(self):
         self.helper = HelperMethods(self)

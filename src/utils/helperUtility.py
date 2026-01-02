@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from app import MainWindow
 
 class HelperMethods:
-    def __init__(self, main_window: "MainWindow" ):
+    def __init__(self, main_window: 'MainWindow' ):
         """Accepts a reference to the main window so dialogs have a valid parent."""
         self.main_window = main_window
         self.ui = self.main_window.ui
@@ -23,7 +23,7 @@ class HelperMethods:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self.main_window, "An exception occurred", message)
         else:
-            self.main_window.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open directory: {folder_path}")
+            self.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open directory: {folder_path}")
 
     def open_file_directly(self, file_path: str):
         """Helper method to open file in default application."""
@@ -34,7 +34,7 @@ class HelperMethods:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self.main_window, "An exception occurred", message)
         else:
-            self.main_window.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open file: {file_path}")
+            self.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open file: {file_path}")
 
     def browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
         """Helper for folder browsing dialogs."""
@@ -46,6 +46,7 @@ class HelperMethods:
                 folder = QFileDialog.getExistingDirectory(self.main_window, dialog_message)
             if folder:
                 line_widget.setText(folder)
+                self.main_window.dir_viewer.set_root_path(folder) # Set the directory viewer path
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(
@@ -53,6 +54,7 @@ class HelperMethods:
                 "An exception occurred in browse folder method",
                 message,
             )
+            
 
     def browse_file_helper_non_input(self, dialog_message: str, file_extension_filter: str) -> str:
         """Helper for file browsing dialogs.
@@ -116,30 +118,3 @@ class HelperMethods:
                 "An exception occurred in browse save file method",
                 message,
             )
-
-def set_file_pattern_to_search(self, folder_path: str) -> None:
-        """Prints out the relevant info based on browse button press or just text changed in the specified input field
-
-        Args:
-            folder_path (str): Path of the folder which is grabbed from the QFileDialog window.
-        """
-        path = Path(folder_path)
-        if path.exists() and path.is_dir():
-            
-            files = []
-            file_patterns = self.ui.line_edit_file_pattern.text().strip().split(",")
-            # Fixed: Check if file_patterns is not empty and contains valid patterns
-            if file_patterns and file_patterns != ['']:
-                self.signals.program_output_text.emit(f"Using file patterns: {file_patterns}")
-
-                for pattern in file_patterns:
-                    pattern = pattern.strip()
-                    if pattern:
-                        files.extend(path.glob(pattern))
-                        self.signals.program_output_text.emit(f"Pattern '{pattern}' matched {len(list(path.glob(pattern)))} files.")
-                if len(files) > 0:
-                    self.signals.statusbar_show_message.emit(f"Selected folder: {folder_path} | Total files: {len(files)} | Using patterns: {file_patterns}", 20000)
-            else:
-                files = list(path.glob('*.*'))
-                if len(files) > 0:
-                    self.signals.statusbar_show_message.emit(f"Selected folder: {folder_path} | Total files: {len(files)}", 20000)
