@@ -124,6 +124,7 @@ class Ui_MainWindow(object):
 
         self.input_browse_folder = QLineEdit(self.widget_configuration)
         self.input_browse_folder.setObjectName(u"input_browse_folder")
+        self.input_browse_folder.setClearButtonEnabled(True)
 
         self.horizontalLayout_3.addWidget(self.input_browse_folder)
 

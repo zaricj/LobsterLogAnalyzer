@@ -30,7 +30,6 @@ class DirectoryViewer():
         self.model.setRootPath(self.start_path)
 
         # 2. Setup the View
-        self.ui.treeview_directory_view
         self.ui.treeview_directory_view.setModel(self.model)
         
         # Set the view's root index to display the contents of the starting path
@@ -47,7 +46,10 @@ class DirectoryViewer():
         # 0: Name, 1: Size, 2: Type, 3: Date Modified
         self.ui.treeview_directory_view.setColumnHidden(1, False) # Show Size
         self.ui.treeview_directory_view.setColumnHidden(2, True) # Hide Type
-        self.ui.treeview_directory_view.setColumnHidden(3, True) # Hide Date Modified
+        self.ui.treeview_directory_view.setColumnHidden(3, False) # Hide Date Modified
+        
+        # Expand column 'Name'
+        self.ui.treeview_directory_view.setColumnWidth(0, 200)
         
         # Connect the selection signal to a handler
         self.ui.treeview_directory_view.clicked.connect(self.on_item_clicked)
