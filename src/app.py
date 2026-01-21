@@ -1,14 +1,15 @@
 from pathlib import Path
-from typing import List, Optional, Dict, Any, TYPE_CHECKING
+from typing import List, Optional, Dict, Any, TYPE_CHECKING, Self
 import sys
 
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QMessageBox,
-    QDialog)
+    QDialog,
+    QSplitter)
 
-from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction
+from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction, QPixmap
 from PySide6.QtCore import (
     Qt,
     QFile,
@@ -28,10 +29,14 @@ ROOT_DIR = Path(__file__).parent
 GUI_PATTERN_DIRECTORY: Path = ROOT_DIR / "patterns"
 GUI_PATTERN_FILE_PATH: Path = GUI_PATTERN_DIRECTORY / "patterns.json"
 
+# Theme file path
+DEFAULT_THEME_FILE_PATH: Path = ROOT_DIR / "gui" / "styles" / "default.qss"
+
 # Application versioning and metadata
 APP_VERSION: str = "v0.0.1"
 APP_NAME: str = "LobsterLogReportViewer"
 AUTHOR: str = "Jovan"
+APP_ICON: Path = ROOT_DIR / "gui" / "media" / "image" "app-icon.png"
 
 # ----------------------------
 # Helpers for window state
@@ -62,6 +67,25 @@ def restore_window_state(window: QMainWindow, settings: QSettings):
             max(available.left(), min(win_geom.left(), available.right() - window.width())),
             max(available.top(), min(win_geom.top(), available.bottom() - window.height()))
         )
+        
+def save_splitter_state(splitter: QSplitter, settings: QSettings, key: str = "splitterState"):
+    settings.setValue(key, splitter.saveState())
+
+def restore_splitter_state(splitter: QSplitter, settings: QSettings, key: str = "splitterState"):
+    state = settings.value(key)
+    if state:
+        splitter.restoreState(state)
+        
+def initialize_theme(parent: Self, theme_file_path: str):
+    try:
+        file = QFile(theme_file_path)
+        if file.open(QFile.ReadOnly | QFile.Text):
+            stream = QTextStream(file)
+            stylesheet = stream.readAll()
+            parent.setStyleSheet(stylesheet)
+        file.close()
+    except Exception as ex:
+        QMessageBox.critical(parent, "Theme load error", f"Failed to load theme: {str(ex)}")
 
 # ----------------------------
 # Entrypoint
@@ -72,13 +96,20 @@ class MainWindow(QMainWindow, Mixin):
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.thread_pool = QThreadPool() # Thread pool
-        self.initialize_ui_all() # From Mixin class
-        self.ui_state_manager.initial_ui_state_on_start()
         
         # Application settings
         self.settings = QSettings("Jovan", "LobsterLogReporterApp")
         
+        # Initialize theme/style for application
+        # initialize_theme(parent=self, theme_file_path=DEFAULT_THEME_FILE_PATH.__str__())
+        
+        self.app_icon: str = APP_ICON.__str__()
+        self.thread_pool: QThreadPool = QThreadPool() # Thread pool
+        
+        self.initialize_ui_all() # From Mixin class
+        self.ui_state_manager.initial_ui_state_on_start()
+        
+
         # Load initial application's settings
         self.load_app_settings()
         
@@ -86,12 +117,14 @@ class MainWindow(QMainWindow, Mixin):
         """Load application settings from QSettings."""
         # Restore geometry safely
         restore_window_state(self, self.settings)
+        restore_splitter_state(self.ui.splitterTop, self.settings)
         self.ui.statusbar.showMessage("Application settings loaded.", 5000) # Shows message in statusbar
         
         # Helper method to save apps settings in a more DRY way
     def save_app_settings(self) -> None:
         """Save application settings to QSettings."""
         save_window_state(self, self.settings) # Save windows location and state
+        save_splitter_state(self.ui.splitterTop, self.settings)
         self.settings.sync()  # optional: force write to disk
         
     def closeEvent(self, event: QCloseEvent) -> None:

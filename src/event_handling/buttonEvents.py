@@ -19,6 +19,7 @@ class ButtonEventHandler:
     def __init__(self, main_window: 'MainWindow'):
         self.main_window = main_window
         self.ui = main_window.ui
+        self.app_icon_path = self.main_window.app_icon
 
     def connect_signals(self):
         """Connect all button events to their handlers."""
@@ -162,31 +163,31 @@ class ButtonEventHandler:
             excel_checked = self.ui.radiobutton_excel.isChecked()
 
             if csv_checked:
-                file_path = self.main_window.helper.browse_save_file_as_helper(
+                save_as = self.main_window.helper.browse_save_file_as_helper(
                     dialog_message="Save CSV file",
                     file_extension_filter="CSV File (*.csv)",
                     statusbar_widget=self.ui.statusbar)
-                if not file_path:
+                if not save_as:
                     return  # User cancelled the save dialog
                 else:
-                    exporter = ExportManager()
-                    signal_connector = SignalConnector(self.main_window) # Init thread signal connector
-                    signal_connector.connect_table_data_exporter(exporter) # Connect signal to exporter thread
-                    exporter.export_to_csv(df, file_path, ",")
+                    exporter = ExportManager(self.app_icon_path)
+                    signal_connector = SignalConnector(self.main_window)
+                    signal_connector.connect_export_manager_signals(exporter)
+                    exporter.export_to_csv(df, save_as, ",")
                     self.main_window.thread_pool.start(exporter)
 
             elif excel_checked:
-                file_path = self.main_window.helper.browse_save_file_as_helper(
+                save_as = self.main_window.helper.browse_save_file_as_helper(
                     dialog_message="Save Excel file",
                     file_extension_filter="Excel File (*.xlsx)",
                     statusbar_widget=self.ui.statusbar)
-                if not file_path:
+                if not save_as:
                     return  # User cancelled the save dialog
                 else:
-                    exporter = ExportManager()
+                    exporter = ExportManager(self.app_icon_path)
                     signal_connector = SignalConnector(self.main_window)
-                    signal_connector.connect_table_data_exporter(exporter)
-                    exporter.export_to_excel(df, file_path)
+                    signal_connector.connect_export_manager_signals(exporter)
+                    exporter.export_to_excel(df, save_as)
                     self.main_window.thread_pool.start(exporter)
             else:
                 QMessageBox.warning(self.main_window, "Export",

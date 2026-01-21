@@ -191,6 +191,9 @@
                   <property name="placeholderText">
                    <string>Select a folder containing text based files to search...</string>
                   </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
