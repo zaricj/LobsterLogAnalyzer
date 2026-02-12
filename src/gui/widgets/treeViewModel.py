@@ -1,18 +1,23 @@
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QTreeView, QPushButton, QLineEdit)
-from PySide6.QtWidgets import QFileSystemModel
-from PySide6.QtCore import QDir, QModelIndex, QStandardPaths
+from PySide6.QtWidgets import QFileSystemModel, QLineEdit
+from PySide6.QtCore import QModelIndex, QStandardPaths, Slot
 
 from typing import TYPE_CHECKING
 from pathlib import Path
+
+from gui.thread_worker import Worker
 
 if TYPE_CHECKING:
     from app import MainWindow
 
 class DirectoryViewer():
+    PREVIEW_MAX_BYTES = 256 * 1024
+
     def __init__(self, main_window: "MainWindow", start_path=None):
         self.main_window = main_window
         self.ui = main_window.ui
         self.start_path = start_path
+        self._active_preview_worker: Worker | None = None
+        self._pending_preview_path: str | None = None
         
         # 1. Setup the Model
         self.model = QFileSystemModel()
@@ -24,7 +29,7 @@ class DirectoryViewer():
             # QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
             self.start_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
         else:
-            self.start_path = QDir.currentPath()
+            self.start_path = str(self.start_path)
 
         # Set the root path on the model
         self.model.setRootPath(self.start_path)
@@ -54,25 +59,6 @@ class DirectoryViewer():
         # Connect the selection signal to a handler
         self.ui.treeview_directory_view.clicked.connect(self.on_item_clicked)
         
-    def on_item_clicked(self, index: QModelIndex):
-        """
-        Handles an item being clicked in the QTreeView.
-        """
-        # Get the absolute file path from the model for the given index
-        file_path: str = self.model.filePath(index)
-        # Init the line edit where to set the path
-        line_edit: QLineEdit = self.ui.input_browse_folder
-        check: str = self.check_if_file_or_folder(file_path)
-    
-        if check == "folder": # Only if folder for now
-            self.set_item_path_in_line_edit(line_edit, file_path) # Set file path in the line edit
-        
-    def set_item_path_in_line_edit(self, line_edit: QLineEdit, text_to_display: str = None):
-        """
-        Sets the selected item's path into the provided QLineEdit.
-        """
-        line_edit.setText(text_to_display)
-        
     def check_if_file_or_folder(self, path: str) -> str:
         """
         Checks if the given path is a file or folder.
@@ -93,3 +79,87 @@ class DirectoryViewer():
         self.model.setRootPath(path)
         root_index = self.model.index(path)
         self.ui.treeview_directory_view.setRootIndex(root_index)
+        
+    def on_item_clicked(self, index: QModelIndex):
+        """
+        Handles an item being clicked in the QTreeView.
+        """
+        # Get the absolute file path from the model for the given index
+        file_path: str = self.model.filePath(index)
+        # Init the line edit where to set the path
+        line_edit: QLineEdit = self.ui.input_browse_folder
+        check: str = self.check_if_file_or_folder(file_path)
+    
+        if check == "folder":
+            self.set_folder_path(line_edit, file_path) # Set file path in the line edit
+        elif check == "file":
+            self.load_file_preview(file_path)
+        else:
+            self.ui.text_edit_log_preview.setPlainText(f"Path not found:\n{file_path}")
+            self.ui.statusbar.showMessage("Unable to load selected path.", 5000)
+
+    def load_file_preview(self, file_path: str) -> None:
+        self._pending_preview_path = file_path
+        self.ui.text_edit_log_preview.setPlainText(f"Loading file preview...\n{file_path}")
+
+        worker = Worker(self.read_file_preview_content, file_path, self.PREVIEW_MAX_BYTES)
+        worker.signals.result.connect(self.on_file_preview_result)
+        worker.signals.error.connect(self.on_file_preview_error)
+        worker.signals.finished.connect(self.on_file_preview_finished)
+        self._active_preview_worker = worker
+        self.main_window.thread_pool.start(worker)
+        
+    def set_folder_path(self, line_edit: QLineEdit, text_to_display: str = None):
+        """
+        Sets the selected item's path into the provided QLineEdit.
+        """
+        line_edit.setText(text_to_display)
+
+    @staticmethod
+    def read_file_preview_content(file_path: str, max_bytes: int) -> dict:
+        file = Path(file_path)
+        with file.open("rb") as handle:
+            payload = handle.read(max_bytes + 1)
+
+        is_truncated = len(payload) > max_bytes
+        if is_truncated:
+            payload = payload[:max_bytes]
+
+        text = payload.decode("utf-8", errors="replace")
+        return {
+            "path": str(file),
+            "content": text,
+            "truncated": is_truncated,
+        }
+
+    @Slot(object)
+    def on_file_preview_result(self, result: object) -> None:
+        if not isinstance(result, dict):
+            self.ui.text_edit_log_preview.setPlainText("Failed to render preview.")
+            return
+
+        path = str(result.get("path", ""))
+        if not path:
+            return
+
+        preview_content = str(result.get("content", ""))
+        is_truncated = bool(result.get("truncated", False))
+
+        if is_truncated:
+            preview_content += "\n\n[Preview truncated to first 256KB]"
+
+        self.ui.text_edit_log_preview.setPlainText(preview_content)
+        self.ui.statusbar.showMessage(f"Loaded preview: {path}", 5000)
+
+    @Slot(tuple)
+    def on_file_preview_error(self, error_data: tuple) -> None:
+        _exctype, value, _traceback_text = error_data
+        path = self._pending_preview_path or ""
+        self.ui.text_edit_log_preview.setPlainText(
+            f"Failed to load file preview:\n{path}\n\n{value}"
+        )
+        self.ui.statusbar.showMessage("File preview failed to load.", 5000)
+
+    @Slot()
+    def on_file_preview_finished(self) -> None:
+        self._active_preview_worker = None
