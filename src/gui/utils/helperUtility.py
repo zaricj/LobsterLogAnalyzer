@@ -55,7 +55,6 @@ class HelperMethods:
                 message,
             )
             
-
     def browse_file_helper_non_input(self, dialog_message: str, file_extension_filter: str) -> str:
         """Helper for file browsing dialogs.
         

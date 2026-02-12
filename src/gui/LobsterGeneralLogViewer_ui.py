@@ -11,54 +11,27 @@
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QLayout, QLineEdit, QMainWindow, QMenu,
-    QMenuBar, QPlainTextEdit, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QSplitter, QStatusBar,
-    QTabWidget, QTableView, QTextEdit, QTreeView,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QLayout,
+    QLineEdit, QMainWindow, QMenuBar, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QSplitter,
+    QStatusBar, QTableView, QTextEdit, QTreeView,
     QVBoxLayout, QWidget)
-from gui.assets.qrc import LobsterLogReporter_rc
+import gui.qrc.LobsterLogReporter_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1103, 860)
+        MainWindow.resize(1071, 824)
         icon = QIcon()
-        icon.addFile(u":/icons/app-icon.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u":/media/icon/app-icon.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setIconSize(QSize(64, 64))
-        self.actionDark = QAction(MainWindow)
-        self.actionDark.setObjectName(u"actionDark")
-        self.actionDark.setCheckable(True)
-        self.actionDark.setChecked(True)
-        icon1 = QIcon()
-        icon1.addFile(u":/images/moon_light_mode_32x32.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.actionDark.setIcon(icon1)
-        self.actionLight = QAction(MainWindow)
-        self.actionLight.setObjectName(u"actionLight")
-        self.actionLight.setCheckable(True)
-        icon2 = QIcon()
-        icon2.addFile(u":/images/sun_light_mode_32x32.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.actionLight.setIcon(icon2)
-        self.actionInput_Directory = QAction(MainWindow)
-        self.actionInput_Directory.setObjectName(u"actionInput_Directory")
-        self.actionInput_Directory1 = QAction(MainWindow)
-        self.actionInput_Directory1.setObjectName(u"actionInput_Directory1")
-        icon3 = QIcon()
-        icon3.addFile(u":/images/input_folder_light_512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.actionInput_Directory1.setIcon(icon3)
-        self.actionOutput_Directory = QAction(MainWindow)
-        self.actionOutput_Directory.setObjectName(u"actionOutput_Directory")
-        icon4 = QIcon()
-        icon4.addFile(u":/images/output_folder_light_512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.actionOutput_Directory.setIcon(icon4)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -78,7 +51,7 @@ class Ui_MainWindow(object):
         self.verticalLeftLogView = QVBoxLayout(self.verticalGroupBox_information)
         self.verticalLeftLogView.setSpacing(3)
         self.verticalLeftLogView.setObjectName(u"verticalLeftLogView")
-        self.verticalLeftLogView.setContentsMargins(3, 3, 3, 3)
+        self.verticalLeftLogView.setContentsMargins(3, 1, 3, 3)
         self.text_edit_program_output = QTextEdit(self.verticalGroupBox_information)
         self.text_edit_program_output.setObjectName(u"text_edit_program_output")
         self.text_edit_program_output.setMinimumSize(QSize(0, 0))
@@ -127,15 +100,15 @@ class Ui_MainWindow(object):
 
         self.button_refresh_configuration = QPushButton(self.widget_configuration)
         self.button_refresh_configuration.setObjectName(u"button_refresh_configuration")
-        icon5 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ViewRefresh))
-        self.button_refresh_configuration.setIcon(icon5)
+        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ViewRefresh))
+        self.button_refresh_configuration.setIcon(icon1)
 
         self.horizontalLayout_2.addWidget(self.button_refresh_configuration)
 
         self.button_pattern_configuration_info = QPushButton(self.widget_configuration)
         self.button_pattern_configuration_info.setObjectName(u"button_pattern_configuration_info")
-        icon6 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
-        self.button_pattern_configuration_info.setIcon(icon6)
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.HelpAbout))
+        self.button_pattern_configuration_info.setIcon(icon2)
 
         self.horizontalLayout_2.addWidget(self.button_pattern_configuration_info)
 
@@ -231,27 +204,23 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QVBoxLayout(self.widgetBottom)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(-1, 0, -1, 3)
-        self.tabWidget_parsed_data_result = QTabWidget(self.widgetBottom)
-        self.tabWidget_parsed_data_result.setObjectName(u"tabWidget_parsed_data_result")
-        self.tabWidget_parsed_data_result.setTabShape(QTabWidget.TabShape.Rounded)
-        self.tabWidget_parsed_data_result.setTabBarAutoHide(False)
-        self.tabWidget_parsed_data_page = QWidget()
-        self.tabWidget_parsed_data_page.setObjectName(u"tabWidget_parsed_data_page")
-        self.verticalLayout_2 = QVBoxLayout(self.tabWidget_parsed_data_page)
+        self.groupBox_parsed_data_result = QGroupBox(self.widgetBottom)
+        self.groupBox_parsed_data_result.setObjectName(u"groupBox_parsed_data_result")
+        self.verticalLayout_2 = QVBoxLayout(self.groupBox_parsed_data_result)
         self.verticalLayout_2.setSpacing(3)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.verticalLayout_2.setContentsMargins(3, 3, 3, 3)
+        self.verticalLayout_2.setContentsMargins(3, 1, 3, 3)
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.button_import_csv = QPushButton(self.tabWidget_parsed_data_page)
+        self.button_import_csv = QPushButton(self.groupBox_parsed_data_result)
         self.button_import_csv.setObjectName(u"button_import_csv")
-        icon7 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertLink))
-        self.button_import_csv.setIcon(icon7)
+        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertLink))
+        self.button_import_csv.setIcon(icon3)
 
         self.horizontalLayout_4.addWidget(self.button_import_csv)
 
-        self.label_export_as = QLabel(self.tabWidget_parsed_data_page)
+        self.label_export_as = QLabel(self.groupBox_parsed_data_result)
         self.label_export_as.setObjectName(u"label_export_as")
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
@@ -261,7 +230,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.label_export_as)
 
-        self.radiobutton_csv = QRadioButton(self.tabWidget_parsed_data_page)
+        self.radiobutton_csv = QRadioButton(self.groupBox_parsed_data_result)
         self.radiobutton_csv.setObjectName(u"radiobutton_csv")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
@@ -272,26 +241,26 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.radiobutton_csv)
 
-        self.radiobutton_excel = QRadioButton(self.tabWidget_parsed_data_page)
+        self.radiobutton_excel = QRadioButton(self.groupBox_parsed_data_result)
         self.radiobutton_excel.setObjectName(u"radiobutton_excel")
         sizePolicy4.setHeightForWidth(self.radiobutton_excel.sizePolicy().hasHeightForWidth())
         self.radiobutton_excel.setSizePolicy(sizePolicy4)
 
         self.horizontalLayout_4.addWidget(self.radiobutton_excel)
 
-        self.button_export = QPushButton(self.tabWidget_parsed_data_page)
+        self.button_export = QPushButton(self.groupBox_parsed_data_result)
         self.button_export.setObjectName(u"button_export")
 
         self.horizontalLayout_4.addWidget(self.button_export)
 
-        self.line_separator_vertical = QFrame(self.tabWidget_parsed_data_page)
+        self.line_separator_vertical = QFrame(self.groupBox_parsed_data_result)
         self.line_separator_vertical.setObjectName(u"line_separator_vertical")
         self.line_separator_vertical.setFrameShape(QFrame.Shape.VLine)
         self.line_separator_vertical.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.horizontalLayout_4.addWidget(self.line_separator_vertical)
 
-        self.button_clear_table = QPushButton(self.tabWidget_parsed_data_page)
+        self.button_clear_table = QPushButton(self.groupBox_parsed_data_result)
         self.button_clear_table.setObjectName(u"button_clear_table")
         self.button_clear_table.setEnabled(False)
 
@@ -300,14 +269,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
 
-        self.line_2 = QFrame(self.tabWidget_parsed_data_page)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.Shape.HLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_2.addWidget(self.line_2)
-
-        self.table_view_result = QTableView(self.tabWidget_parsed_data_page)
+        self.table_view_result = QTableView(self.groupBox_parsed_data_result)
         self.table_view_result.setObjectName(u"table_view_result")
         self.table_view_result.setShowGrid(True)
         self.table_view_result.setGridStyle(Qt.PenStyle.SolidLine)
@@ -315,55 +277,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.table_view_result)
 
-        self.input_filter_table = QLineEdit(self.tabWidget_parsed_data_page)
+        self.input_filter_table = QLineEdit(self.groupBox_parsed_data_result)
         self.input_filter_table.setObjectName(u"input_filter_table")
 
         self.verticalLayout_2.addWidget(self.input_filter_table)
 
-        self.tabWidget_parsed_data_result.addTab(self.tabWidget_parsed_data_page, "")
-        self.tabWidget_log_preview_page = QWidget()
-        self.tabWidget_log_preview_page.setObjectName(u"tabWidget_log_preview_page")
-        self.verticalLayout_5 = QVBoxLayout(self.tabWidget_log_preview_page)
-        self.verticalLayout_5.setSpacing(3)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_5.setContentsMargins(3, 3, 3, 3)
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_log_preview_sort_by_date = QLabel(self.tabWidget_log_preview_page)
-        self.label_log_preview_sort_by_date.setObjectName(u"label_log_preview_sort_by_date")
-        sizePolicy3.setHeightForWidth(self.label_log_preview_sort_by_date.sizePolicy().hasHeightForWidth())
-        self.label_log_preview_sort_by_date.setSizePolicy(sizePolicy3)
 
-        self.horizontalLayout.addWidget(self.label_log_preview_sort_by_date)
-
-        self.combobox_log_preview = QComboBox(self.tabWidget_log_preview_page)
-        self.combobox_log_preview.setObjectName(u"combobox_log_preview")
-
-        self.horizontalLayout.addWidget(self.combobox_log_preview)
-
-        self.checkbox_log_preview_wrap_text = QCheckBox(self.tabWidget_log_preview_page)
-        self.checkbox_log_preview_wrap_text.setObjectName(u"checkbox_log_preview_wrap_text")
-
-        self.horizontalLayout.addWidget(self.checkbox_log_preview_wrap_text)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout)
-
-        self.line_3 = QFrame(self.tabWidget_log_preview_page)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_5.addWidget(self.line_3)
-
-        self.text_edit_log_preview = QPlainTextEdit(self.tabWidget_log_preview_page)
-        self.text_edit_log_preview.setObjectName(u"text_edit_log_preview")
-
-        self.verticalLayout_5.addWidget(self.text_edit_log_preview)
-
-        self.tabWidget_parsed_data_result.addTab(self.tabWidget_log_preview_page, "")
-
-        self.verticalLayout_4.addWidget(self.tabWidget_parsed_data_result)
+        self.verticalLayout_4.addWidget(self.groupBox_parsed_data_result)
 
 
         self.verticalLayout.addWidget(self.widgetBottom)
@@ -371,50 +291,25 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1103, 33))
-        self.menuSettings = QMenu(self.menubar)
-        self.menuSettings.setObjectName(u"menuSettings")
-        self.menuAppearance = QMenu(self.menuSettings)
-        self.menuAppearance.setObjectName(u"menuAppearance")
-        self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
-        self.menuOpen = QMenu(self.menuFile)
-        self.menuOpen.setObjectName(u"menuOpen")
+        self.menubar.setGeometry(QRect(0, 0, 1071, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuSettings.menuAction())
-        self.menuSettings.addAction(self.menuAppearance.menuAction())
-        self.menuAppearance.addAction(self.actionDark)
-        self.menuAppearance.addAction(self.actionLight)
-        self.menuFile.addAction(self.menuOpen.menuAction())
-        self.menuOpen.addAction(self.actionInput_Directory1)
-        self.menuOpen.addAction(self.actionOutput_Directory)
-
         self.retranslateUi(MainWindow)
-
-        self.tabWidget_parsed_data_result.setCurrentIndex(0)
-
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Lobster Log Reporter", None))
-        self.actionDark.setText(QCoreApplication.translate("MainWindow", u"Dark", None))
-        self.actionLight.setText(QCoreApplication.translate("MainWindow", u"Light", None))
-        self.actionInput_Directory.setText(QCoreApplication.translate("MainWindow", u"Input Directory", None))
-        self.actionInput_Directory1.setText(QCoreApplication.translate("MainWindow", u"Input Directory", None))
-        self.actionOutput_Directory.setText(QCoreApplication.translate("MainWindow", u"Output Directory", None))
         self.verticalGroupBox_information.setTitle(QCoreApplication.translate("MainWindow", u"Information", None))
         self.label_pattern_configuration.setText(QCoreApplication.translate("MainWindow", u"Pattern Configuration:", None))
 #if QT_CONFIG(tooltip)
         self.button_refresh_configuration.setToolTip(QCoreApplication.translate("MainWindow", u"Refresh the \u00fcatterns if new files were added to the patterns folder.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_refresh_configuration.setText("")
+        self.button_refresh_configuration.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
 #if QT_CONFIG(tooltip)
         self.button_pattern_configuration_info.setToolTip(QCoreApplication.translate("MainWindow", u"Show relevant info about the selected pattern configuration.", None))
 #endif // QT_CONFIG(tooltip)
@@ -432,6 +327,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_parse_files.setText(QCoreApplication.translate("MainWindow", u"Parse Files", None))
         self.verticalGroupBox_directory_view.setTitle(QCoreApplication.translate("MainWindow", u"Directory View", None))
+        self.groupBox_parsed_data_result.setTitle(QCoreApplication.translate("MainWindow", u"Parsed Data Result", None))
 #if QT_CONFIG(tooltip)
         self.button_import_csv.setToolTip(QCoreApplication.translate("MainWindow", u"Import a CSV file into the table.", None))
 #endif // QT_CONFIG(tooltip)
@@ -451,13 +347,5 @@ class Ui_MainWindow(object):
         self.input_filter_table.setToolTip(QCoreApplication.translate("MainWindow", u"Filter table data.", None))
 #endif // QT_CONFIG(tooltip)
         self.input_filter_table.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Filter table data by text...", None))
-        self.tabWidget_parsed_data_result.setTabText(self.tabWidget_parsed_data_result.indexOf(self.tabWidget_parsed_data_page), QCoreApplication.translate("MainWindow", u"Result Table", None))
-        self.label_log_preview_sort_by_date.setText(QCoreApplication.translate("MainWindow", u"Filter Text by Time:", None))
-        self.checkbox_log_preview_wrap_text.setText(QCoreApplication.translate("MainWindow", u"Wrap Text", None))
-        self.tabWidget_parsed_data_result.setTabText(self.tabWidget_parsed_data_result.indexOf(self.tabWidget_log_preview_page), QCoreApplication.translate("MainWindow", u"Log Preview", None))
-        self.menuSettings.setTitle(QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.menuAppearance.setTitle(QCoreApplication.translate("MainWindow", u"Appearance", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuOpen.setTitle(QCoreApplication.translate("MainWindow", u"Open", None))
     # retranslateUi
 
