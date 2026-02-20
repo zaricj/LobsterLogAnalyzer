@@ -80,7 +80,7 @@ def initialize_theme(
     theme: str,
     settings: QSettings,
     key: str = "appAppearanceMode"):
-    qdarktheme.setup_theme(theme, "rounded", custom_colors={"primary": "#019743"}) # Apply theme
+    qdarktheme.setup_theme(theme, "rounded", custom_colors={"primary": "#1259d1"}) # Apply theme
     settings.setValue("appAppearanceMode",theme)
 
 
