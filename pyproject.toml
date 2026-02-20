@@ -8,4 +8,5 @@ dependencies = [
     "pandas>=3.0.0",
     "pyqtdarktheme>=2.1.0",
     "pyside6-essentials>=6.10.2",
+    "xlsxwriter>=3.2.9",
 ]
