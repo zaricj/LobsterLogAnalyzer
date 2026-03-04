@@ -29,12 +29,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1199, 907)
+        MainWindow.resize(1199, 913)
         font = QFont()
         font.setPointSize(12)
         MainWindow.setFont(font)
         icon = QIcon()
-        icon.addFile(u":/icons/app-icon.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u":/icons/Geis.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setIconSize(QSize(64, 64))
         self.actionDark = QAction(MainWindow)
@@ -256,8 +256,6 @@ class Ui_MainWindow(object):
         self.button_import_csv = QPushButton(self.tabWidget_parsed_data_page)
         self.button_import_csv.setObjectName(u"button_import_csv")
         self.button_import_csv.setFont(font1)
-        icon7 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertLink))
-        self.button_import_csv.setIcon(icon7)
 
         self.horizontalLayout_4.addWidget(self.button_import_csv)
 
@@ -409,7 +407,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Lobster Log Reporter", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"App", None))
         self.actionDark.setText(QCoreApplication.translate("MainWindow", u"Dark", None))
         self.actionLight.setText(QCoreApplication.translate("MainWindow", u"Light", None))
         self.actionInput_Directory.setText(QCoreApplication.translate("MainWindow", u"Input Directory", None))

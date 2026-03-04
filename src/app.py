@@ -5,8 +5,8 @@ import qdarktheme
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplitter
 
-from PySide6.QtGui import QCloseEvent, QGuiApplication
-from PySide6.QtCore import QFile, QTextStream, QSettings, QThreadPool
+from PySide6.QtGui import QCloseEvent, QGuiApplication, QIcon
+from PySide6.QtCore import QSettings, QThreadPool
 
 from gui.LobsterGeneralLogViewer_ui import Ui_MainWindow
 from gui.utils.UIMixinUtility import Mixin
@@ -15,11 +15,11 @@ from gui.utils.UIMixinUtility import Mixin
 # Constants
 # ----------------------------
 ROOT_DIR = Path(__file__).parent
-APP_ICON: Path = ROOT_DIR / "gui" / "assets" / "images" / "app-icon.png"
+APP_ICON: Path = ROOT_DIR / "gui" / "assets" / "icons" / "Geis.ico"
 
 # Application versioning and metadata
 APP_VERSION: str = "v1.0.0"
-APP_NAME: str = "LobsterLogAnalyzer"
+APP_NAME: str = "LobsterLogReporter"
 AUTHOR: str = "Jovan"
 
 
@@ -80,7 +80,7 @@ def initialize_theme(
     theme: str,
     settings: QSettings,
     key: str = "appAppearanceMode"):
-    qdarktheme.setup_theme(theme, "rounded", custom_colors={"primary": "#1259d1"}) # Apply theme
+    qdarktheme.setup_theme(theme, "rounded", custom_colors={"primary": "#ffd815"}) # Apply theme
     settings.setValue("appAppearanceMode",theme)
 
 
@@ -90,18 +90,19 @@ def initialize_theme(
 class MainWindow(QMainWindow, Mixin):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.app_icon: str = APP_ICON.as_posix()
+        self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
+        self.setWindowIcon(QIcon(self.app_icon))
         # Init directories
         self.root_dir = Path(__file__).parent
         self.config_dir: Path = self.root_dir / "config"
         self.log_pattern_config: Path = self.config_dir / "log_patterns.json"
         self.gui_settings_config: Path = self.config_dir / "gui_settings.json"
         # Application settings
-        self.settings = QSettings("Jovan", "LobsterLogAnalyzer")
+        self.settings = QSettings("Jovan", "LobsterLogReporter")
 
-        self.app_icon: str = APP_ICON.__str__()
         self.thread_pool: QThreadPool = QThreadPool()  # Thread pool
 
         self.initialize_ui_all()  # From Mixin class

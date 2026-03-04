@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1199</width>
-    <height>907</height>
+    <height>913</height>
    </rect>
   </property>
   <property name="font">
@@ -16,11 +16,11 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Lobster Log Reporter</string>
+   <string>App</string>
   </property>
   <property name="windowIcon">
    <iconset resource="assets/qrc/LobsterLogReporter.qrc">
-    <normaloff>:/icons/app-icon.ico</normaloff>:/icons/app-icon.ico</iconset>
+    <normaloff>:/icons/Geis.ico</normaloff>:/icons/Geis.ico</iconset>
   </property>
   <property name="iconSize">
    <size>
@@ -398,9 +398,6 @@
                </property>
                <property name="text">
                 <string>Import CSV</string>
-               </property>
-               <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::InsertLink"/>
                </property>
               </widget>
              </item>

@@ -1,6 +1,7 @@
 <RCC>
   <qresource>
     <file>../icons/app-icon.ico</file>
+    <file>../icons/Geis.ico</file>
     <file>../images/app-icon.png</file>
     <file>../images/checkmark_48x48.png</file>
     <file>../images/checkmark_white_48x48.png</file>

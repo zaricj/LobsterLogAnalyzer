@@ -8,7 +8,7 @@ def main() -> None:
         None: Nothing :)
     """
 
-    PATH: str = r"D:\GitHub\LobsterLogReporter\src\gui\LobsterGeneralLogViewer_ui.py"
+    PATH: str = r"src\gui\LobsterGeneralLogViewer_ui.py"
 
     TO_REPLACE_STR: str = "import LobsterLogReporter_rc"
     REPLACE_STR: str = "from gui.assets.qrc import LobsterLogReporter_rc"
