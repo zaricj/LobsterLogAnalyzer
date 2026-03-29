@@ -68,12 +68,12 @@ def extract_event_fields(event_block: str, compiled_patterns: dict):
     return row
 
 
-def get_csv_headers_from_sample(filename: str | Path, header_regex: re.Pattern, compiled_regex: dict) -> list[str]:
+def get_csv_headers_from_sample(filename: str | Path, header_regex: re.Pattern, compiled_regex: dict, event_keyword: str) -> list[str]:
     headers = set()
     
     # Get headers from sample
     for block in yield_event_block(filename, header_regex):
-        if not is_sql_event(block):
+        if not is_keyword_event(event_keyword, block):
             continue
         
         row = extract_event_fields(block, compiled_regex)
@@ -97,16 +97,17 @@ def get_files_in_folder(directory: Path, file_pattern: str = "*.log") -> list[Pa
         return list(directory.glob(file_pattern))
 
 
-def is_sql_event(event: str) -> bool:
-    """Use this to only get SQL Exception from the log file
+def is_keyword_event(keyword: str, event_block: str) -> bool:
+    """Use this to filter out event blocks that contain a specific keyword
 
     Args:
-        event (str): Event text block in the log file
+        keyword (str): Keyword to look for in event block
+        event_block (str): Event text block in the log file
 
     Returns:
-        bool: True if SQL event, False otherwise
+        bool: True if keyword is in the event block, False otherwise
     """
-    return "sql" in event.lower()
+    return keyword.lower() in event_block.lower()
 
 
 def clean_block(block: str, ignore_regex: re.Pattern) -> str:

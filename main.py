@@ -6,7 +6,7 @@ from utility.utils import (
     yield_event_block,
     compile_regex_patterns,
     get_files_in_folder,
-    is_sql_event,
+    is_keyword_event,
     extract_event_fields
 )
 
@@ -23,12 +23,12 @@ def load_sql_config() -> tuple:
     return compiled_sql, header_regex
 
 
-def iter_sql_rows(log_files: list[Path], header_regex, compiled_sql) -> iter:
+def iter_sql_rows(log_files: list[Path], header_regex, compiled_sql, event_keyword: str) -> iter:
     """Yield one extracted row dict per SQL event across all log files."""
     for log_file in log_files:
         print(f"Processing file: '{log_file}'")
         for block in yield_event_block(log_file, header_regex):
-            if is_sql_event(block):
+            if is_keyword_event(event_keyword, block):
                 yield extract_event_fields(block, compiled_sql)
 
 
@@ -52,14 +52,15 @@ def write_rows_to_csv(csv_output_file: Path, headers: list[str], rows: iter) -> 
 
 def extract_and_write_to_csv(csv_output_file: str | Path):
     try:
+        event_keyword = "sql"
         compiled_sql, header_regex = load_sql_config()
         log_files = get_files_in_folder(LOGS_PATH, FILE_PATTERN)
 
         print("Grabbing headers from sample file...")
-        headers = get_csv_headers_from_sample(log_files[0], header_regex, compiled_sql)
+        headers = get_csv_headers_from_sample(log_files[0], header_regex, compiled_sql, event_keyword)
         print(f"Starting to process {len(log_files)} files of type '{FILE_PATTERN}'")
 
-        rows = iter_sql_rows(log_files, header_regex, compiled_sql)
+        rows = iter_sql_rows(log_files, header_regex, compiled_sql, event_keyword)
         lines_written = write_rows_to_csv(csv_output_file, headers, rows)
 
         print(f"Task finished, results saved to '{csv_output_file}'\nTotal lines written: {lines_written}")
