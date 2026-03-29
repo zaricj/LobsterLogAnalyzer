@@ -1,6 +1,8 @@
 import re
 import json
 from pathlib import Path
+import xlsxwriter
+import csv
 
 # ========== Load & Compile Patterns ==========
 
@@ -39,9 +41,9 @@ def yield_event_block(filepath: str | Path, header_pattern: str | re.Pattern):
             # Ignore keywords can be added here, for now the text "at" will be ignored
             #if line.startswith("at"):
             #    continue
-
+            
             buffer.append(line)
-
+            
         if buffer:
             yield "".join(buffer)
             
@@ -68,16 +70,23 @@ def extract_event_fields(event_block: str, compiled_patterns: dict):
     return row
 
 
-def get_csv_headers_from_sample(filename: str | Path, header_regex: re.Pattern, compiled_regex: dict, event_keyword: str) -> list[str]:
+def get_csv_headers_from_sample(filename: str | Path, header_regex: re.Pattern, compiled_regex: dict, event_keyword: str = "") -> list[str]:
     headers = set()
     
-    # Get headers from sample
-    for block in yield_event_block(filename, header_regex):
-        if not is_keyword_event(event_keyword, block):
-            continue
-        
-        row = extract_event_fields(block, compiled_regex)
-        headers.update(row.keys())
+    if event_keyword == "":
+        # Get headers from sample without keyword
+        for block in yield_event_block(filename, header_regex):
+            
+            row = extract_event_fields(block, compiled_regex)
+            headers.update(row.keys())
+    else:
+        # Get headers from sample with only the matching keyword in the block of text
+        for block in yield_event_block(filename, header_regex):
+            if not is_keyword_event(event_keyword, block):
+                continue
+            
+            row = extract_event_fields(block, compiled_regex)
+            headers.update(row.keys())
     
     print(f"Headers grabbed from sample: {headers}")
     return list(headers)
@@ -114,3 +123,39 @@ def clean_block(block: str, ignore_regex: re.Pattern) -> str:
     block = ignore_regex.sub("", block)
     block = re.sub(r"\n{2,}", "\n", block)
     return block.strip()
+
+
+# ---------- Excel Conversion ----------
+
+def validate_inputs(file: Path) -> bool:
+    try:
+        # First check if file is not None
+        if not file:
+            raise ValueError("No file provided for processing.")
+        # If not None, check if file exists
+        elif not file.exists():
+            raise FileNotFoundError(f"The specified file '{file}' does not exist.")
+        else:
+            return True
+    except Exception as ex:
+        print(f"Input validation error: {ex}")
+        return False
+
+
+def convert_csv_to_excel(input_csv_file: Path, output_excel_file: Path):
+    # Validate csv input file
+    is_csv_valid = validate_inputs(input_csv_file)
+    
+    if is_csv_valid:
+        # Create a new Excel workbook and add a worksheet
+        workbook = xlsxwriter.Workbook(str(output_excel_file))
+        worksheet = workbook.add_worksheet()
+        # Open the CSV file and read its contents using the csv module
+        # Use newline="" so the csv module can handle newlines correctly
+        with open(input_csv_file, "r", newline="", encoding="utf-8") as csvfile:
+            reader = csv.reader(csvfile, delimiter=";", quotechar='"')
+            for row_idx, row in enumerate(reader):
+                for col_idx, cell in enumerate(row):
+                    worksheet.write(row_idx, col_idx, cell)
+        workbook.close()
+        print(f"Excel written: {output_excel_file}")
