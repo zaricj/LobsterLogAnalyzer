@@ -51,13 +51,13 @@ def extract_event_fields(event_block: str, compiled_patterns: dict) -> Dict[str,
     """
     row = {}
 
-    # Extract base info (timestamp, source)
+    # Extract base info (time)
     for name, regex in compiled_patterns["base"].items():
         match = regex.search(event_block)
         if match:
             row.update(match.groupdict())
 
-    # Extract specific patterns (SQL query, error details, parameters)
+    # Extract specific patterns
     for name, regex in compiled_patterns["patterns"].items():
         match = regex.search(event_block)
         if match:

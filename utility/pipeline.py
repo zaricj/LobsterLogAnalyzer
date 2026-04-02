@@ -38,22 +38,30 @@ def load_config(patterns_config: Path, pattern_key: str):
 # ---------- Row Generator ----------
 
 def iter_rows(files: list[Path], header_regex, compiled, keyword: str) -> Iterator[dict]:
-    for file in files:
-        log_date = extract_log_date(file)
-        print(f"Processing: {file}")
+    # Identify the specific keys we are looking for in the patterns
+    data_keys = compiled["patterns"].keys() 
 
-        for block in yield_event_block(file, header_regex):
-            if keyword and not is_keyword_event(keyword, block):
+    for file in files:
+        log_date = extract_log_date(file) 
+        print(f"Processing: {file}") 
+
+        for block in yield_event_block(file, header_regex): 
+            if keyword and not is_keyword_event(keyword, block): 
                 continue
 
-            row = extract_event_fields(block, compiled)
+            row = extract_event_fields(block, compiled) 
+
+            # If every data field (sql_query, error_details, etc.) is None, 
+            # it means this block is just a log header or noise. Skip it.
+            if all(row.get(key) is None for key in data_keys):
+                continue
 
             # combine date + time
-            if "time" in row:
-                row["timestamp"] = f"{log_date} {row['time']}"
-                del row["time"]
+            if "time" in row: 
+                row["timestamp"] = f"{log_date} {row['time']}" 
+                del row["time"] 
 
-            yield row
+            yield row 
 
 
 # ---------- CSV ----------
@@ -105,7 +113,8 @@ def run_pipeline(
         )
     else:
         headers = list(compiled["patterns"].keys())
-        
+    
+    # Remove the time header from the base header key
     headers = [h for h in headers if h != "time"]
     headers.insert(0, "timestamp")
 
