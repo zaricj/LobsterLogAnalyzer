@@ -17,7 +17,7 @@ from utility.parser import (
 )
 
 
-# ---------- Config ----------
+# ========== Config ==========
 
 def load_config(patterns_config: Path, pattern_key: str):
     if not validate_input(patterns_config):
@@ -34,10 +34,10 @@ def load_config(patterns_config: Path, pattern_key: str):
     return compiled, header_regex
 
 
-# ---------- Rows and headers Generator ----------
+# ========== Rows and headers Generator ==========
 
 def collect_rows_and_headers(files, header_regex, compiled, keyword):
-    headers = set()
+    headers = []
     rows = []
 
     for file in files:
@@ -49,33 +49,37 @@ def collect_rows_and_headers(files, header_regex, compiled, keyword):
                 continue
 
             row = extract_matches_from_event_block(block, compiled)
-            
+
             if not row:
                 continue
-            
-            # timestamp handling
+
+            # --- timestamp handling ---
             if "time" in row:
                 timestamp_str = f"{log_date} {row['time']}"
                 row["timestamp"] = timestamp_str.strip()
                 del row["time"]
+            else:
+                row["timestamp"] = log_date
 
-            # Skip empty/noise rows
-            # Ignore rows where all NON-timestamp values are empty
-            data_values = [
-                v for k, v in row.items()
+            # --- filter empty rows (ignore timestamp) ---
+            if not any(
+                v not in (None, "")
+                for k, v in row.items()
                 if k != "timestamp"
-            ]
-
-            if not any(v not in (None, "") for v in data_values):
+            ):
                 continue
 
-            headers.update(row.keys())
+            # --- collect headers (ordered, no duplicates) ---
+            for key in row.keys():
+                if key not in headers:
+                    headers.append(key)
+
             rows.append(row)
 
-    return rows, list(headers)
+    return rows, headers
 
 
-# ---------- CSV ----------
+# ========== CSV ==========
 
 def write_csv(output: Path, headers: list[str], rows: Iterator[dict]) -> int:
     count = 0
@@ -108,6 +112,7 @@ def run_pipeline(
     file_pattern: str,
     output_csv: Path,
     event_keyword: str = ""):
+    
     compiled, header_regex = load_config(patterns_config, pattern_key)
 
     files = get_files_in_folder(files, file_pattern)
@@ -121,7 +126,7 @@ def run_pipeline(
     )
 
     # Normalize headers
-    headers = [h for h in headers if h != "time"]
+    headers = ["timestamp"] + [h for h in headers if h not in ("time", "timestamp")]
 
     # Write CSV
     count = write_csv(output_csv, headers, rows)

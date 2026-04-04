@@ -4,7 +4,8 @@
       "header": "^(?P<time>\\d{2}:\\d{2}:\\d{2})"
     },
     "patterns": {
-      "default": "(?s)exception on sql statement:\\s*(?P<sql_query>.+?)\\s*\\(transformed to.*?java\\.sql\\.[^:]+:\\s*(?P<error_details>.*?)(?:\\s+for statement|$).*?Caused by:\\s*java\\.sql\\.[^:]+:\\s*(?P<caused_by>[^\\n]*)"
+      "sql_exception": "(?s)exception on sql statement:\\s*(?P<sql_query>.+?)\\s*\\(transformed to.*?java\\.sql\\.[^:]+:\\s*(?P<error_details>.*?)(?:\\s+for statement|$).*?Caused by:\\s*java\\.sql\\.[^:]+:\\s*(?P<caused_by>[^\\n]*)",
+      "check_failed_for_db": "(?s)check failed for alias\\s+(?P<check_failed_for>'.*?').*?Caused by:\\s*java\\.net\\.[^:]+:\\s*(?P<caused_by>[^\\n]*)"
     }
   }
 }
