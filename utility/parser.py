@@ -38,31 +38,29 @@ def yield_event_block(filepath: str | Path, header_pattern: str | re.Pattern):
             yield "".join(buffer)
 
 
-def extract_event_fields(event_block: str, compiled_patterns: dict) -> Dict[str, str]:
-    """Extract fields using compiled regexes
+def extract_matches_from_event_block(event_block: str, compiled_patterns: dict) -> Dict[str, str]:
+    """Extract the matches from the event block of text, with the compiled regex patterns.
 
     Args:
-        event_block (str): The text block of the event, which contains all the info we want to extract from
-        compiled_patterns (dict): A dictionary of compiled regex patterns
+        event_block (str): The text block of the event, which contains all the info we want to extract from.
+        compiled_patterns (dict): A dictionary of compiled regex patterns.
 
     Returns:
-        dict: A dictionary containing the extracted fields
+        dict: A dictionary containing the found matches in the event block.
     """
     row = {}
 
-    # Extract base info (time)
-    for name, regex in compiled_patterns["base"].items():
+    # Base (e.g. time)
+    for _, regex in compiled_patterns["base"].items():
         match = regex.search(event_block)
         if match:
             row.update(match.groupdict())
 
-    # Extract specific patterns
-    for name, regex in compiled_patterns["patterns"].items():
+    # Patterns
+    for _, regex in compiled_patterns["patterns"].items():
         match = regex.search(event_block)
         if match:
             row.update(match.groupdict())
-        else:
-            row[name] = None  # maintain column consistency
 
     return row
 
@@ -75,7 +73,6 @@ def extract_log_date(filepath: Path) -> str:
     match = date_regex.search(filepath.with_suffix("").name)
     
     if match:
-        print("Found date pattern by using file name.")
         date = match.group()
         return date
     
@@ -102,27 +99,6 @@ def extract_log_date(filepath: Path) -> str:
                 return date
 
     return date
-
-
-def get_csv_headers_from_sample(filename: str | Path, header_regex: re.Pattern, compiled_regex: dict, event_keyword: str = "") -> list[str]:
-    headers = set()
-    
-    if event_keyword == "":
-        # Get headers from sample without keyword
-        for block in yield_event_block(filename, header_regex):
-            row = extract_event_fields(block, compiled_regex)
-            headers.update(row.keys())
-    else:
-        # Get headers from sample with only the matching keyword in the block of text
-        for block in yield_event_block(filename, header_regex):
-            if not is_keyword_event(event_keyword, block):
-                continue
-            
-            row = extract_event_fields(block, compiled_regex)
-            headers.update(row.keys())
-    
-    print(f"Headers grabbed from sample: {headers}")
-    return list(headers)
 
 
 def is_keyword_event(keyword: str, event_block: str) -> bool:

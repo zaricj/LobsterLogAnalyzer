@@ -1,5 +1,5 @@
 from pathlib import Path
-from utility.pipeline import run_pipeline, run_test
+from utility.pipeline import run_pipeline
 
 if __name__ == "__main__":
     
@@ -12,21 +12,14 @@ if __name__ == "__main__":
     # Test run config
     SAMPLE_FILE = Path("sample.log")
     
+    #TODO Every single pattern key in patterns.json must contain a regex with multiple groups that will be used to search in an event block in log file.
+    #TODO This makes sure that a single line contains all the matches from the same even block
+    
     normal_run = run_pipeline(
         patterns_config=PATTERNS_CONFIG,
         pattern_key=PATTERN_KEY,
-        logs_path=LOGS_PATH,
+        files=LOGS_PATH,
         file_pattern=FILE_PATTERN,
         output_csv=CSV_FILE,
-        event_keyword="",
-        headers_mode="auto"
+        event_keyword=""
     )
-    
-    # test_run = run_test(
-    #     patterns_config=PATTERNS_CONFIG,
-    #     pattern_key=PATTERN_KEY,
-    #     sample_file=SAMPLE_FILE,
-    #     output_csv=CSV_FILE,
-    #     event_keyword="",
-    #     headers_mode="auto"
-    # )

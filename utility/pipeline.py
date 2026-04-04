@@ -10,9 +10,8 @@ from utility.core import (
 )
 
 from utility.parser import (
-    get_csv_headers_from_sample,
     yield_event_block,
-    extract_event_fields,
+    extract_matches_from_event_block,
     is_keyword_event,
     extract_log_date
 )
@@ -35,34 +34,45 @@ def load_config(patterns_config: Path, pattern_key: str):
     return compiled, header_regex
 
 
-# ---------- Row Generator ----------
+# ---------- Rows and headers Generator ----------
 
-def iter_rows(files: list[Path], header_regex, compiled, keyword: str) -> Iterator[dict]:
-    # Identify the specific keys we are looking for in the patterns
-    data_keys = compiled["patterns"].keys() 
+def collect_rows_and_headers(files, header_regex, compiled, keyword):
+    headers = set()
+    rows = []
 
     for file in files:
         log_date = extract_log_date(file)
-        print(f"Processing: {file}") 
+        print(f"Processing: {file}")
 
-        for block in yield_event_block(file, header_regex): 
-            if keyword and not is_keyword_event(keyword, block): 
+        for block in yield_event_block(file, header_regex):
+            if keyword and not is_keyword_event(keyword, block):
                 continue
 
-            row = extract_event_fields(block, compiled) 
+            row = extract_matches_from_event_block(block, compiled)
+            
+            if not row:
+                continue
+            
+            # timestamp handling
+            if "time" in row:
+                timestamp_str = f"{log_date} {row['time']}"
+                row["timestamp"] = timestamp_str.strip()
+                del row["time"]
 
-            # If every data field (sql_query, error_details, etc.) is None, 
-            # it means this block is just a log header or noise. Skip it.
-            if all(row.get(key) is None for key in data_keys):
+            # Skip empty/noise rows
+            # Ignore rows where all NON-timestamp values are empty
+            data_values = [
+                v for k, v in row.items()
+                if k != "timestamp"
+            ]
+
+            if not any(v not in (None, "") for v in data_values):
                 continue
 
-            # combine date + time
-            if "time" in row: 
-                timestamp_str = f"{log_date} {row['time']}" 
-                row["timestamp"] = timestamp_str.strip() # Remove whitespace at the beginning if no log_date was found
-                del row["time"] 
+            headers.update(row.keys())
+            rows.append(row)
 
-            yield row 
+    return rows, list(headers)
 
 
 # ---------- CSV ----------
@@ -94,90 +104,27 @@ def write_csv(output: Path, headers: list[str], rows: Iterator[dict]) -> int:
 def run_pipeline(
     patterns_config: Path,
     pattern_key: str,
-    logs_path: Path,
+    files: Path,
     file_pattern: str,
     output_csv: Path,
-    event_keyword: str = "",
-    headers_mode: str = "auto"
-):
+    event_keyword: str = ""):
     compiled, header_regex = load_config(patterns_config, pattern_key)
 
-    files = get_files_in_folder(logs_path, file_pattern)
+    files = get_files_in_folder(files, file_pattern)
 
     if not files:
         raise ValueError("No log files found")
 
-    # Headers
-    if headers_mode == "auto":
-        headers = get_csv_headers_from_sample(
-            files[0], header_regex, compiled, event_keyword
-        )
-    else:
-        headers = list(compiled["patterns"].keys())
-    
-    # Remove the time header from the base header key
+    # Collect rows + headers in one pass
+    rows, headers = collect_rows_and_headers(
+        files, header_regex, compiled, event_keyword
+    )
+
+    # Normalize headers
     headers = [h for h in headers if h != "time"]
-    headers.insert(0, "timestamp")
 
-    # Rows
-    rows = iter_rows(files, header_regex, compiled, event_keyword)
-
-    # Write
+    # Write CSV
     count = write_csv(output_csv, headers, rows)
 
     print(f"\nDone. {count} rows written to {output_csv}")
-
-
-def run_test(
-    patterns_config: Path,
-    pattern_key: str,
-    sample_file: Path,
-    output_csv: Path,
-    event_keyword: str = "",
-    headers_mode: str = "auto"
-):
-    from pprint import pprint
     
-    test_file = [sample_file]
-    pprint("Running test pipeline.")
-    
-    pprint("Loading patterns configuration...")
-    compiled, header_regex = load_config(patterns_config, pattern_key)
-    
-    pprint("Compiled patterns:")
-    for c_key, c_value in compiled.items():
-        pprint(f"{c_key}: {c_value}")
-
-    pprint("Compiled headers:")
-    pprint(header_regex)
-    
-    
-    if not sample_file:
-        raise ValueError("File not found")
-
-    # Headers
-    if headers_mode == "auto":
-        pprint("Getting headers from sample...")
-        headers = get_csv_headers_from_sample(
-            sample_file, header_regex, compiled, event_keyword
-        )
-    else:
-        pprint("Using specified headers...")
-        headers = list(compiled["patterns"].keys())
-    
-    pprint(f"GRABBED HEADERS: {headers}")
-    
-    # Remove the time header from the base header key
-    headers = [h for h in headers if h != "time"]
-    headers.insert(0, "timestamp")
-    
-    pprint(f"Headers after trying to remove the 'time' header: {headers}")
-
-    pprint("Iterating over rows...")
-    # Rows
-    rows = iter_rows(test_file, header_regex, compiled, event_keyword)
-
-    # Write
-    count = write_csv(output_csv, headers, rows)
-
-    print(f"\nDone. {count} rows written to {output_csv}")
